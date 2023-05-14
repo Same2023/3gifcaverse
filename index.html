@@ -1,0 +1,27 @@
+<?php
+
+// Get the gift card amount from the POST request.
+$amount = $_POST['amount'];
+
+// Check if the amount is valid.
+if (!is_numeric($amount) || $amount <= 0) {
+  die('Invalid amount.');
+}
+
+// Generate a gift card code.
+$code = bin2hex(openssl_random_pseudo_bytes(16));
+
+// Save the gift card code to the database.
+$sql = "INSERT INTO gift_cards (code, amount) VALUES ('$code', $amount);";
+mysqli_query($conn, $sql);
+
+// Send the gift card code to the customer.
+$to = $_POST['email'];
+$subject = 'Your Virtual Gift Card Code';
+$message = "Your virtual gift card code is: $code";
+mail($to, $subject, $message);
+
+// Redirect the customer to the homepage.
+header('Location: /');
+
+?>
